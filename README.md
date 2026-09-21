@@ -1,2 +1,24 @@
-# LibrarySystem
-实训项目，使用C实现LibrarySystem
+# C 语言多文件夹项目模板
+
+## 目录结构
+```
+项目名/
+├─ .vscode/                     # VSCode 配置（不用改）
+│  ├─ tasks.json                # 编译任务
+│  ├─ launch.json               # 调试配置
+│  └─ c_cpp_properties.json     # 头文件智能提示
+├─ src/                         # 源码 .c 文件放这里
+├─ inc/                         # 头文件 .h 文件放这里
+└─ bin/                         # 编译输出 exe（自动生成）
+```
+
+## 模板使用方法
+1. 复制本文件夹，重命名为你的项目名
+2. VSCode → 文件 → 打开文件夹 → 选中重命名后的文件夹
+3. 写代码
+4. `Ctrl+F5` 编译并运行，`F5` 编译并断点调试，`Ctrl+Shift+B` 只编译
+
+## 新增文件
+- src/ 下新增 .c：不用改配置，自动编译
+- inc/ 下新增 .h：不用改配置，自动识别
+- 新增其他源码文件夹：在 tasks.json 的 args 里加对应路径

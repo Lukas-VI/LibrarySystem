@@ -1,0 +1,54 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+            {
+                "label": "build",
+                "type": "process",
+                "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                "args": [
+                    "-NoProfile",
+                    "-ExecutionPolicy", "Bypass",
+                    "-Command",
+                    "$src = (Get-ChildItem '${workspaceFolder}\\src\\*.c').FullName; & gcc -g $src -I '${workspaceFolder}\\inc' -o '${workspaceFolder}\\bin\\${workspaceFolderBasename}.exe' -Wall"
+                ],
+                "options": {
+                    "cwd": "${workspaceFolder}"
+                },
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                },
+                "problemMatcher": "$gcc",
+                "detail": "编译src下所有.c，输出到bin目录"
+        },    
+        {
+            "label": "run",
+            "type": "process",
+            "command": "${workspaceFolder}\\bin\\${workspaceFolderBasename}.exe",
+            "dependsOn": "build"
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe 生成活动文件",
+            "command": "E:\\MinGW\\mingw64\\bin\\gcc.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "调试器生成的任务。"
+        }
+    ]
+}

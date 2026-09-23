@@ -107,7 +107,6 @@ void add_user(User *user_list, int *size, int *user_list_size) {
     }
     user_list[*size - 1].id = max_id + 1;
 
-
     // 保存到文件中
     save_user_data(user_list, *size);
 

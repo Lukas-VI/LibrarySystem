@@ -53,6 +53,18 @@ void save_book_data(Book *book_list, int book_size){
     fclose(fp);
 }
 
+void save_borrow_data(Borrow *borrow_list, int borrow_size) {
+    FILE *fp = fopen("./data/borrow.data", "w");
+    if(fp == NULL) {
+        printf("打开文件失败\n");
+        return;
+    }
+    for(int i = 0; i < borrow_size; i++) {
+        fprintf(fp, "%d %d %d\n", borrow_list[i].user_id, borrow_list[i].book_id, borrow_list[i].borrow_time);
+    }
+    fclose(fp);
+}
+
 // 排序：补齐空行，按id排序
 void sort_user_data(){
     FILE *fp = fopen("./data/user.data", "r+");
@@ -115,6 +127,27 @@ void init_book_size(Book *book_list, int *book_size, int *book_list_size){
     }
     while(fscanf(fp, "%s %s %s %f", book_list[*book_size].book_name, book_list[*book_size].author, book_list[*book_size].publisher, &book_list[*book_size].price) != EOF) {
         (*book_size)++;
+    }
+    fclose(fp);
+}
+
+void init_borrow_size(Borrow *borrow_list, int *borrow_size, int *book_list_size) {
+    FILE *fp = fopen("./data/borrow.data", "r");
+    if(fp == NULL) {
+        printf("打开文件失败\n");
+        return;
+    }
+    while(fscanf(fp, "%d %d %d", &borrow_list[*borrow_size].user_id, &borrow_list[*borrow_size].book_id, &borrow_list[*borrow_size].borrow_time) != EOF) {
+        (*borrow_size)++;
+    }
+
+    if(*borrow_size >= *book_list_size) {
+        borrow_list = realloc(borrow_list, (*borrow_size + 1) * sizeof(Borrow));
+        if(borrow_list == NULL) {
+            printf("内存分配失败\n");
+            exit(1);
+        }
+        *book_list_size = *borrow_size + 1;
     }
     fclose(fp);
 }

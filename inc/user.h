@@ -21,6 +21,10 @@ typedef struct{
 }User;
 
 void user_login(User *user_list, int *size, int *user_list_size);
-void user_menu_select(User *user_list, int *size, int *user_list_size);
+void user_menu_select(User *user_list, Book *book_list, int login_id);
+
+void modify_user_personal(User *user_list, int size, int login_id);
+
+int form_id_to_index(int id, User *user_list, int size);
 
 #endif

@@ -12,17 +12,29 @@ typedef struct{
     char publisher[20];
     // 价格
     float price;
+    // 剩余数量
+    int quantity;
 }Book;
 
-void add_book();
-void get_book_list();
-void modify_book();
-void delete_book();
+typedef struct{
+    // 用户id
+    int user_id;
+    // 书籍id
+    int book_id;
+    // 借阅时间戳
+    int borrow_time;
+}Borrow;
 
-void search_book_by_name();
-void search_book_by_id();
 
-void borrow_book();
-void return_book();
+void add_book(Book *book_list, int *book_size, int *book_list_size);
+void get_book_list(Book *book_list, int book_size);
+void modify_book(Book *book_list, int book_size);
+void delete_book(Book *book_list, int *book_size, int *book_list_size);
+
+void search_book_by_name(Book *book_list, int book_size);
+void search_book_by_id(Book *book_list, int book_size);
+
+void borrow_book(Book *book_list, int *book_size, int user_id);
+void return_book(Book *book_list, int *book_size, int user_id);
 
 #endif

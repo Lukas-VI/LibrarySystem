@@ -1,7 +1,7 @@
 #include "common.h"
 #include "user.h"
 
-void user_login(struct User *user_list, int size) {
+void user_login(User *user_list, int *size, int *user_list_size) {
     while(1) {
         printf("***************************************************************\n");
         printf("*************************用户登录模块***********************\n");
@@ -38,6 +38,32 @@ void user_login(struct User *user_list, int size) {
         }else {
             // 登录失败
             printf("用户名或密码错误~~~\n");
+        }
+    }
+}
+
+void user_menu_select(User *user_list, int *size, int *user_list_size) {
+    printf("***************************************************************\n");
+    printf("*********************用户菜单选择模块***********************\n");
+    printf("***************************************************************\n\n");
+    
+    while(1) {
+        printf("请输入功能编号（1：添加用户， 2： 查询用户列表，3：修改用户， 4：删除用户， -1：退出菜单选择）：");
+        int flag;
+        scanf("%d", &flag);
+        if(flag == -1) {
+            printf("退出菜单选择模块~~~~");
+            break;
+        }else if(flag == 1) {  // 添加用户
+            add_user(user_list, size, user_list_size);
+        }else if(flag == 2) { // 查询用户列表
+            get_user_list(user_list, *size);
+        }else if(flag == 3) { // 修改用户
+            modify_user(user_list, *size);
+        }else if(flag == 4) {  // 删除用户
+            delete_user(user_list, size, *user_list_size);
+        }else {
+            printf("您输入的功能编号有误，请重新输入~~~");
         }
     }
 }

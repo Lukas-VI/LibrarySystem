@@ -3,12 +3,12 @@
 
 #include "user.h" 
 
-void admin_login(struct User *user_list, int *size);
-void menu_select(struct User *user_list, int *size);
+void admin_login(User *user_list, int *size, int *user_list_size);
+void menu_select(User *user_list, int *size, int *user_list_size);
 
-void add_user(struct User *user_list, int *size);
-void get_user_list(struct User *user_list, int size);
-void modify_user(struct User *user_list, int size);
-void delete_user(struct User *user_list, int size);
+void add_user(User *user_list, int *size, int *user_list_size);
+void get_user_list(User *user_list, int size);
+void modify_user(User *user_list, int size);
+void delete_user(User *user_list, int *size, int *user_list_size);
 
 #endif

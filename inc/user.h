@@ -5,7 +5,7 @@
 
 
 // 用户的结构体，用来保存一个用户的信息
-struct User{
+typedef struct{
     // ID
     int id;
     // 用户名
@@ -18,8 +18,9 @@ struct User{
     char email[25];
     // 姓名
     char name[10];
-};
+}User;
 
-void user_login(struct User *user_list, int size);
+void user_login(User *user_list, int *size, int *user_list_size);
+void user_menu_select(User *user_list, int *size, int *user_list_size);
 
 #endif

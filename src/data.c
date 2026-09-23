@@ -1,7 +1,7 @@
 #include "data.h"
 #include "common.h"
 
-void load_user_data(struct User *user_list, int *size) {
+void load_user_data(User *user_list, int *size) {
     FILE *fp = fopen("./data/user.data", "r");
     if(fp == NULL) {
         printf("打开文件失败\n");
@@ -13,7 +13,7 @@ void load_user_data(struct User *user_list, int *size) {
     fclose(fp);
 }
 
-void load_book_data(struct Book *book_list, int *book_size) {
+void load_book_data(Book *book_list, int *book_size) {
     FILE *fp = fopen("./data/book.data", "r");
     if(fp == NULL) {
         printf("打开文件失败\n");
@@ -25,7 +25,7 @@ void load_book_data(struct Book *book_list, int *book_size) {
     fclose(fp);
 }
 
-void save_user_data(struct User *user_list, int size){
+void save_user_data(User *user_list, int size){
     FILE *fp = fopen("./data/user.data", "w");
     if(fp == NULL) {
         printf("打开文件失败\n");
@@ -34,14 +34,14 @@ void save_user_data(struct User *user_list, int size){
     // 从文件开头开始将内存中的数据覆写到文件
     // 指针fp指向文件开头
     fseek(fp, 0, SEEK_SET);
-    
+
     for(int i = 0; i < size; i++) {
         fprintf(fp, "%d %s %s %s %s %s\n", user_list[i].id, user_list[i].username, user_list[i].password, user_list[i].phone, user_list[i].email, user_list[i].name);
     }
     fclose(fp);
 }
 
-void save_book_data(struct Book *book_list, int book_size){
+void save_book_data(Book *book_list, int book_size){
     FILE *fp = fopen("./data/book.data", "w");
     if(fp == NULL) {
         printf("打开文件失败\n");
@@ -53,8 +53,8 @@ void save_book_data(struct Book *book_list, int book_size){
     fclose(fp);
 }
 
-// 序列化: 已删除的用户将在文件中的空余的行补齐
-void serialize_user_data(){
+// 排序：补齐空行，按id排序
+void sort_user_data(){
     FILE *fp = fopen("./data/user.data", "r+");
     if(fp == NULL) {
         printf("打开文件失败\n");
@@ -70,7 +70,7 @@ void serialize_user_data(){
     fclose(fp);
 }
 
-void serialize_book_data(){
+void sort_book_data(){
     FILE *fp = fopen("./data/book.data", "r+");
     if(fp == NULL) {
         printf("打开文件失败\n");
@@ -86,7 +86,7 @@ void serialize_book_data(){
     fclose(fp);
 }
 
-void init_user_size(struct User *user_list, int *size){
+void init_user_size(User *user_list, int *size, int *user_list_size){
     FILE *fp = fopen("./data/user.data", "r");
     if(fp == NULL) {
         printf("打开文件失败\n");
@@ -95,10 +95,19 @@ void init_user_size(struct User *user_list, int *size){
     while(fscanf(fp, "%d %s %s %s %s %s", &user_list[*size].id, user_list[*size].username, user_list[*size].password, user_list[*size].phone, user_list[*size].email, user_list[*size].name) != EOF) {
         (*size)++;
     }
+
+    if(*size >= *user_list_size) {
+        user_list = realloc(user_list, (*size + 1) * sizeof(User));
+        if(user_list == NULL) {
+            printf("内存分配失败\n");
+            exit(1);
+        }
+        *user_list_size = *size + 1;
+    }
     fclose(fp);
 }
 
-void init_book_size(struct Book *book_list, int *book_size){
+void init_book_size(Book *book_list, int *book_size, int *book_list_size){
     FILE *fp = fopen("./data/book.data", "r");
     if(fp == NULL) {
         printf("打开文件失败\n");

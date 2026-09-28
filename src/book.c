@@ -1,6 +1,7 @@
 #include "common.h"
 #include "user.h"
 #include "book.h"
+#include "data.h"
 
 void add_book(Book *book_list, int *book_size, int *book_list_size) {
     // 创建一个书籍结构体的对象
@@ -47,7 +48,7 @@ void add_book(Book *book_list, int *book_size, int *book_list_size) {
 
     // 保存到文件中
     save_book_data(book_list, *book_size);
-    
+
 }
 
 
@@ -62,7 +63,7 @@ void get_book_list(Book *book_list, int book_size) {
     printf("---------------------------------------------------------------------------------------------------------------\n");
     // 循环打印所有的书籍信息
     for(int i = 0; i < book_size; i++) {     
-        printf("%20s %20s %20s %20s %20s %20d\n", book_list[i].book_name, book_list[i].author, book_list[i].publisher, book_list[i].price, book_list[i].quantity, book_list[i].book_id);
+        printf("%20s %20s %20s %20f %20d %20d\n", book_list[i].book_name, book_list[i].author, book_list[i].publisher, book_list[i].price, book_list[i].quantity, book_list[i].book_id);
         printf("---------------------------------------------------------------------------------------------------------------\n");
     
     }
@@ -111,11 +112,11 @@ void modify_book(Book *book_list, int book_size) {
             break;
         case 4:
             printf("请输入新的价格：");
-            scanf("%s", book_list[select].price);
+            scanf("%f", &book_list[select].price);
             break;
         case 5:
             printf("请输入新的剩余数量：");
-            scanf("%s", book_list[select].quantity);
+            scanf("%d", &book_list[select].quantity);
             break;
         default:
             printf("输入有误，请重新输入\n");
@@ -178,70 +179,4 @@ void search_book_by_name(Book *book_list, int book_size) {
 
 void search_book_by_id(Book *book_list, int book_size) {
 
-}
-
-void borrow_book(Book *book_list, int *book_size, int user_id) {
-    printf("***************************************************************\n");
-    printf("*************************借阅书籍模块***********************\n");
-    printf("***************************************************************\n\n");
-
-    while(1) {
-        printf("请输入要借阅的书籍id（如果输入 -1，就退出借阅书籍模块）：");
-        int select_id;
-        scanf("%d", &select_id);
-        if(select_id == -1) {
-            printf("退出借阅书籍模块\n");
-            break;
-        }
-        // 判断输入的id是否在列表内
-        int flag = 0;
-        for(int i = 0; i < *book_size; i++) {
-            if(book_list[i].book_id == select_id) {
-                flag = 1;
-                break;
-            }
-        }
-        if(!flag) {
-            printf("您输入的书籍id有误，请重新输入\n");
-            continue;
-        }else if (book_list[select_id].quantity <= 0) {
-            printf("该书籍已被借完，请重新输入\n");
-            continue;
-        }else {
-            book_list[select_id].quantity--;
-            printf("借阅成功，请及时归还\n");
-            break;
-        }
-    }
-    // 保存到文件中
-    save_book_data(book_list, *book_size);    
-}
-
-void return_book(Book *book_list, int *book_size, int user_id) {
-    printf("***************************************************************\n");
-    printf("*************************归还书籍模块***********************\n");
-    printf("***************************************************************\n\n");
-    printf("请输入要归还的书籍id（如果输入 -1，就退出归还书籍模块）：");
-    while(1) {
-        int select_id;
-        scanf("%d", &select_id);
-        if(select_id == -1) {
-            printf("退出归还书籍模块\n");
-            break;
-        }
-        // 判断输入的id是否在列表内
-        int flag = 0;
-        for(int i = 0; i < *book_size; i++) {
-            if(book_list[i].book_id == select_id) {
-                flag = 1;
-                break;
-            }
-        }
-        if(!flag) {
-            printf("您输入的书籍id有误，请重新输入\n");
-            continue;
-        }
-    }
-    // 保存到文件中
-    save_book_data(book_list, *book_size);
 }

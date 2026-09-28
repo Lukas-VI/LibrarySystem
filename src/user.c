@@ -1,9 +1,11 @@
 #include "common.h"
 #include "user.h"
 #include "book.h"
+#include "data.h"
+#include "borrow_book.h"
 
 
-void user_login(User *user_list, int *size, int *user_list_size) {
+void user_login(User *user_list, int *user_size, int *user_list_capacity, Book *book_list, int *book_size, int *book_list_capacity, Borrow *borrow_list, int *borrow_size, int *borrow_list_capacity, int login_id) {
     while(1) {
         printf("***************************************************************\n");
         printf("*************************用户登录模块***********************\n");
@@ -24,7 +26,7 @@ void user_login(User *user_list, int *size, int *user_list_size) {
 
         // 判断用户名和密码是否正确
         int flag = 0;
-        for(int i = 0; i < size; i++) {
+        for(int i = 0; i < *user_size; i++) {
             if(strcmp(username, user_list[i].username) == 0 && strcmp(password, user_list[i].password) == 0) {
                 flag = 1;
                 break;
@@ -35,8 +37,7 @@ void user_login(User *user_list, int *size, int *user_list_size) {
             // 登录成功， 进入菜单选择功能
             printf("登录成功，即将进入菜单选择功能..........\n");
             // 进入菜单选择模块
-            // user_menu_select();
-
+            user_menu_select(user_list, user_size, user_list_capacity, book_list, book_size, book_list_size, borrow_list, borrow_size, borrow_list_size, login_id);
         }else {
             // 登录失败
             printf("用户名或密码错误~~~\n");
@@ -44,7 +45,17 @@ void user_login(User *user_list, int *size, int *user_list_size) {
     }
 }
 
-void user_menu_select(User *user_list, int *size, Book *book_list, int *book_size, int *user_list_size, int *book_list_size, int login_id) {
+void user_menu_select(  User *user_list, 
+                        int *user_size, 
+                        int *user_list_capacity, 
+                        Book *book_list, 
+                        int *book_size, 
+                        int *book_list_capacity, 
+                        Borrow *borrow_list,
+                        int *borrow_size,
+                        int *borrow_list_capacity,
+                        int login_id) {
+
     printf("***************************************************************\n");
     printf("*********************用户菜单选择模块***********************\n");
     printf("***************************************************************\n\n");
@@ -57,13 +68,13 @@ void user_menu_select(User *user_list, int *size, Book *book_list, int *book_siz
             printf("退出菜单选择模块~~~~");
             break;
         }else if(flag == 1) {  // 借阅书籍
-            borrow_book(book_list, book_size, login_id);
+            borrow_book(book_list, book_size, login_id, borrow_size, borrow_list_size, login_id);
         }else if(flag == 2) { // 归还书籍
-            return_book(book_list, book_size, login_id);
+            return_book(book_list, book_size, login_id, borrow_size, borrow_list_size, login_id);
         }else if(flag == 3) { // 查询书籍列表
             get_book_list(book_list, *book_size);
         }else if(flag == 4) { // 修改个人信息
-            modify_user_personal(user_list, *size, login_id);
+            modify_user_personal(user_list, *user_size, login_id);
         }else {
             printf("您输入的功能编号有误，请重新输入~~~");
         }
@@ -71,10 +82,9 @@ void user_menu_select(User *user_list, int *size, Book *book_list, int *book_siz
 }
 
 // 修改个人信息
-void modify_user_personal(User *user_list, int size, int login_id) {
-    int select;
+void modify_user_personal(User *user_list, int user_size, int login_id) {
     int item;
-    int index = form_id_to_index(login_id, user_list, size);
+    int index = form_id_to_index(login_id, user_list, user_size);
 
     printf("***************************************************************\n");
     printf("*************************修改用户模块***********************\n");
@@ -114,13 +124,13 @@ void modify_user_personal(User *user_list, int size, int login_id) {
             printf("输入有误，请重新输入\n");
     }
     // 保存到文件中
-    save_user_data(user_list, size);
+    save_user_data(user_list, user_size);
 
 }
 
-int form_id_to_index(int id, User *user_list, int size)
+int form_id_to_index(int id, User *user_list, int user_size)
 {
-    for(int i = 0; i < size; i++) {
+    for(int i = 0; i < user_size; i++) {
         if(user_list[i].id == id) {
             return i;
         }

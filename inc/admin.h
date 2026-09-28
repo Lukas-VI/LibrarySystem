@@ -3,12 +3,6 @@
 
 #include "user.h" 
 
-void admin_login(User *user_list, int *size, int *user_list_size);
-void menu_select(User *user_list, int *size, int *user_list_size);
-
-void add_user(User *user_list, int *size, int *user_list_size);
-void get_user_list(User *user_list, int size);
-void modify_user(User *user_list, int size);
-void delete_user(User *user_list, int *size, int *user_list_size);
-
+void admin_login(UserContext user_context, BookContext book_context);
+void admin_menu_select(UserContext user_context, BookContext book_context);
 #endif

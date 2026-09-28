@@ -11,25 +11,9 @@
 void printWelcome(); 
 void login_select();
 
-
-
-// 用户的数组，这个数组的每个元素都是一个用户的信息（用户的结构体对象）
-User user_list[DEFAULT_ARRARY_SIZE];
-// 定义一个变量来记录数组中元素的个数
-int size = 0;
-int user_list_size = DEFAULT_ARRARY_SIZE;
-
-// 书籍的数组，这个数组的每个元素都是一个书籍的信息（书籍的结构体对象）
-Book book_list[DEFAULT_ARRARY_SIZE];
-// 定义一个变量来记录数组中元素的个数
-int book_size = 0;
-int book_list_size = DEFAULT_ARRARY_SIZE;
-
-// 借阅的数组，这个数组的每个元素都是一个借阅的信息（借阅的结构体对象）
-Borrow borrow_list[DEFAULT_ARRARY_SIZE];
-// 定义一个变量来记录数组中元素的个数
-int borrow_size = 0;
-int borrow_list_size = DEFAULT_ARRARY_SIZE;
+UserContext user_context;
+BookContext book_context;
+BorrowContext borrow_context;
 
 int login_id = -1; // 登录的用户id，-1表示未登录
 
@@ -37,9 +21,9 @@ int login_id = -1; // 登录的用户id，-1表示未登录
 int main() {
     printf("Hello, %s!\n", PROJECT_NAME);
 
-    init_user_size(user_list, &size, &user_list_size);
-    init_book_size(book_list, &book_size, &book_list_size);
-    init_borrow_size(borrow_list, &borrow_size, &borrow_list_size);
+    init_user_data(&user_context);
+    init_book_data(&book_context);
+    init_borrow_data(&borrow_context);
 
     while (1)
     {
@@ -51,8 +35,6 @@ int main() {
 }
 
 // 登录模块
-
-
 void login_select() {
     int select;
 
@@ -64,15 +46,13 @@ void login_select() {
         printf("退出系统~~~~\n");
         exit(0);
     }else if(select == 1) {
-        admin_login(user_list, &size, &user_list_size);
+        admin_login(user_list, &user_size, &user_list_capacity, book_list, &book_size, &book_list_capacity);
     }else if(select == 2) {
-        user_login(user_list, &size, &user_list_size);
+        user_login(user_list, &user_size, &user_list_capacity, book_list, &book_size, &book_list_capacity, borrow_list, &borrow_size, &borrow_list_capacity, login_id);
     }else {
         printf("您输入的登录类型有误，请重新输入~~~\n");
     }
 }
-
-
 
 // 打印欢迎信息
 void printWelcome() {
@@ -85,7 +65,4 @@ void printWelcome() {
     printf("***************************************************************\n");
     printf("***************************************************************\n");
 }
-
-
-
 

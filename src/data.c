@@ -1,31 +1,7 @@
 #include "data.h"
 #include "common.h"
 
-void load_user_data(User *user_list, int *size) {
-    FILE *fp = fopen("./data/user.data", "r");
-    if(fp == NULL) {
-        printf("打开文件失败\n");
-        return;
-    }
-    while(fscanf(fp, "%d %s %s %s %s %s", &user_list[*size].id, user_list[*size].username, user_list[*size].password, user_list[*size].phone, user_list[*size].email, user_list[*size].name) != EOF) {
-        (*size)++;
-    }
-    fclose(fp);
-}
-
-void load_book_data(Book *book_list, int *book_size) {
-    FILE *fp = fopen("./data/book.data", "r");
-    if(fp == NULL) {
-        printf("打开文件失败\n");
-        return;
-    }
-    while(fscanf(fp, "%s %s %s %f", book_list[*book_size].book_name, book_list[*book_size].author, book_list[*book_size].publisher, &book_list[*book_size].price) != EOF) {
-        (*book_size)++;
-    }
-    fclose(fp);
-}
-
-void save_user_data(User *user_list, int size){
+void save_user_data(UserContext *user_context){
     FILE *fp = fopen("./data/user.data", "w");
     if(fp == NULL) {
         printf("打开文件失败\n");
@@ -35,32 +11,45 @@ void save_user_data(User *user_list, int size){
     // 指针fp指向文件开头
     fseek(fp, 0, SEEK_SET);
 
-    for(int i = 0; i < size; i++) {
-        fprintf(fp, "%d %s %s %s %s %s\n", user_list[i].id, user_list[i].username, user_list[i].password, user_list[i].phone, user_list[i].email, user_list[i].name);
+    for(int i = 0; i < user_context->user_size; i++) {
+        fprintf(fp, "%d %s %s %s %s %s\n", 
+            user_context->user_list[i].id, 
+            user_context->user_list[i].username, 
+            user_context->user_list[i].password, 
+            user_context->user_list[i].phone, 
+            user_context->user_list[i].email, 
+            user_context->user_list[i].name);
     }
     fclose(fp);
 }
 
-void save_book_data(Book *book_list, int book_size){
+void save_book_data(BookContext *book_context){
     FILE *fp = fopen("./data/book.data", "w");
     if(fp == NULL) {
         printf("打开文件失败\n");
         return;
     }
-    for(int i = 0; i < book_size; i++) {
-        fprintf(fp, "%s %s %s %.2f\n", book_list[i].book_name, book_list[i].author, book_list[i].publisher, book_list[i].price);
+    for(int i = 0; i < book_context->book_size; i++) {
+        fprintf(fp, "%s %s %s %.2f\n",        
+        book_context->book_list[i].book_name, 
+        book_context->book_list[i].author, 
+        book_context->book_list[i].publisher, 
+        book_context->book_list[i].price);
     }
     fclose(fp);
 }
 
-void save_borrow_data(Borrow *borrow_list, int borrow_size) {
+void save_borrow_data(BorrowContext *borrow_context) {
     FILE *fp = fopen("./data/borrow.data", "w");
     if(fp == NULL) {
         printf("打开文件失败\n");
         return;
     }
-    for(int i = 0; i < borrow_size; i++) {
-        fprintf(fp, "%d %d %d\n", borrow_list[i].user_id, borrow_list[i].book_id, borrow_list[i].borrow_time);
+    for(int i = 0; i < borrow_context->borrow_size; i++) {
+        fprintf(fp, "%d %d %lld\n", 
+            borrow_context->borrow_list[i].user_id, 
+            borrow_context->borrow_list[i].book_id, 
+            borrow_context->borrow_list[i].borrow_time);
     }
     fclose(fp);
 }
@@ -98,56 +87,115 @@ void sort_book_data(){
     fclose(fp);
 }
 
-void init_user_size(User *user_list, int *size, int *user_list_size){
+void init_user_data(UserContext *ctx)
+{
     FILE *fp = fopen("./data/user.data", "r");
-    if(fp == NULL) {
-        printf("打开文件失败\n");
+    if (fp == NULL) {
+        printf("打开文件失败，视为无数据\n");
+        ctx->user_size = 0;
         return;
     }
-    while(fscanf(fp, "%d %s %s %s %s %s", &user_list[*size].id, user_list[*size].username, user_list[*size].password, user_list[*size].phone, user_list[*size].email, user_list[*size].name) != EOF) {
-        (*size)++;
-    }
 
-    if(*size >= *user_list_size) {
-        user_list = realloc(user_list, (*size + 1) * sizeof(User));
-        if(user_list == NULL) {
-            printf("内存分配失败\n");
-            exit(1);
+    ctx->user_size = 0;
+
+    User tmp;
+    while (fscanf(fp, "%d %s %s %s %s %s",
+                  &tmp.id, tmp.username, tmp.password,
+                  tmp.phone, tmp.email, tmp.name) == 6)
+    {
+        /* 容量不够时扩容（注意 realloc 失败不能覆盖原指针！） */
+        if (ctx->user_size >= ctx->user_list_capacity) {
+            int new_cap = (ctx->user_list_capacity == 0)
+                          ? 8 : ctx->user_list_capacity * 2;
+
+            User *new_list = realloc(ctx->user_list,
+                                     new_cap * sizeof(User));
+            if (new_list == NULL) {
+                printf("内存分配失败\n");
+                fclose(fp);
+                exit(1);
+            }
+            ctx->user_list = new_list;      // 扩容成功才赋值
+            ctx->user_list_capacity = new_cap;
         }
-        *user_list_size = *size + 1;
+
+        ctx->user_list[ctx->user_size] = tmp;
+        ctx->user_size++;
     }
     fclose(fp);
 }
 
-void init_book_size(Book *book_list, int *book_size, int *book_list_size){
+void init_book_data(BookContext *ctx)
+{
     FILE *fp = fopen("./data/book.data", "r");
-    if(fp == NULL) {
-        printf("打开文件失败\n");
+    if (fp == NULL) {
+        printf("打开文件失败，视为无数据\n");
+        ctx->book_size = 0;
         return;
     }
-    while(fscanf(fp, "%s %s %s %f", book_list[*book_size].book_name, book_list[*book_size].author, book_list[*book_size].publisher, &book_list[*book_size].price) != EOF) {
-        (*book_size)++;
+
+    ctx->book_size = 0;
+
+    Book tmp;
+    while (fscanf(fp, "%d %s %s %s %f %s",
+                  &tmp.book_id, tmp.book_name, tmp.author,
+                  tmp.publisher, &tmp.price, &tmp.quantity) == 6)
+    {
+        /* 容量不够时扩容（注意 realloc 失败不能覆盖原指针！） */
+        if (ctx->book_size >= ctx->book_list_capacity) {
+            int new_cap = (ctx->book_list_capacity == 0)
+                          ? 8 : ctx->book_list_capacity * 2;
+
+            User *new_list = realloc(ctx->book_list,
+                                     new_cap * sizeof(User));
+            if (new_list == NULL) {
+                printf("内存分配失败\n");
+                fclose(fp);
+                exit(1);
+            }
+            ctx->book_list = new_list;      // 扩容成功才赋值
+            ctx->book_list_capacity = new_cap;
+        }
+
+        ctx->book_list[ctx->book_size] = tmp;
+        ctx->book_size++;
     }
     fclose(fp);
 }
 
-void init_borrow_size(Borrow *borrow_list, int *borrow_size, int *book_list_size) {
+void init_book_data(BorrowContext *ctx)
+{
     FILE *fp = fopen("./data/borrow.data", "r");
-    if(fp == NULL) {
-        printf("打开文件失败\n");
+    if (fp == NULL) {
+        printf("打开文件失败，视为无数据\n");
+        ctx->borrow_size = 0;
         return;
     }
-    while(fscanf(fp, "%d %d %d", &borrow_list[*borrow_size].user_id, &borrow_list[*borrow_size].book_id, &borrow_list[*borrow_size].borrow_time) != EOF) {
-        (*borrow_size)++;
-    }
 
-    if(*borrow_size >= *book_list_size) {
-        borrow_list = realloc(borrow_list, (*borrow_size + 1) * sizeof(Borrow));
-        if(borrow_list == NULL) {
-            printf("内存分配失败\n");
-            exit(1);
+    ctx->borrow_size = 0;
+
+    Borrow tmp;
+    while (fscanf(fp, "%d %d %lld",
+                  &tmp.user_id, &tmp.book_id, &tmp.borrow_time) == 3)
+    {
+        /* 容量不够时扩容（注意 realloc 失败不能覆盖原指针！） */
+        if (ctx->borrow_size >= ctx->borrow_list_capacity) {
+            int new_cap = (ctx->borrow_list_capacity == 0)
+                          ? 8 : ctx->borrow_list_capacity * 2;
+
+            User *new_list = realloc(ctx->borrow_list,
+                                     new_cap * sizeof(User));
+            if (new_list == NULL) {
+                printf("内存分配失败\n");
+                fclose(fp);
+                exit(1);
+            }
+            ctx->borrow_list = new_list;      // 扩容成功才赋值
+            ctx->borrow_list_capacity = new_cap;
         }
-        *book_list_size = *borrow_size + 1;
+
+        ctx->borrow_list[ctx->borrow_size] = tmp;
+        ctx->borrow_size++;
     }
     fclose(fp);
 }
